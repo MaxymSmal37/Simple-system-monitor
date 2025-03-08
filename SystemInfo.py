@@ -5,9 +5,15 @@ import time
 from rich.console import Console
 from rich.table import Table
 from tinydb import TinyDB
+import matplotlib.pyplot as plt
 
 db = TinyDB('system_info.json')
 SystemData = db.table('data')   
+
+timestamps = []
+cpu_usages = []
+ram_usages = []
+disk_usages = []
 
 delayTime = 1
 
@@ -80,6 +86,13 @@ def get_system_info():
     table.add_column("Metrics", justify="left", style="blue", no_wrap=True)
     table.add_column("Value", justify="right", style="green")
 
+  
+    timestamps.append(sysInfo.timestamp.split(" ")[1]) 
+    cpu_usages.append(sysInfo.cpu_usage)
+    ram_usages.append(sysInfo.ram_usage)
+    disk_usages.append(psutil.disk_usage('/').percent)
+
+
     table.add_row("Current time", sysInfo.timestamp)
     table.add_row("Boot Time", f"{sysInfo.boot_time}")
     table.add_row("Operating System", str(sysInfo.os_info) + " " + str(sysInfo.os_architecture))
@@ -94,11 +107,27 @@ def get_system_info():
 
     return table
 
+def draw_chart():    
+    plt.figure(figsize=(10, 6))
+    plt.plot(timestamps, cpu_usages, label="CPU Usage (%)", color='red', marker='o')
+    plt.plot(timestamps, ram_usages, label="Memory Usage (%)", color='blue', marker='o')
+    plt.plot(timestamps, disk_usages, label="Disk Usage (%)", color='green', marker='o')
+
+    plt.xlabel('Time')
+    plt.ylabel('Usage (%)')
+    plt.title('System Resource')
+    plt.xticks(rotation=90)
+    plt.legend(loc="upper left")
+    plt.tight_layout()
+    plt.show()
+
 def monitor_system(delay):
     try:
         while True:
             console.clear()
             console.print(get_system_info())
+            if len(timestamps) > 1 and len(timestamps) % 30 == 0:
+                draw_chart()
             time.sleep(delay)
     except KeyboardInterrupt:
         console.print("\nEnd execution.")
