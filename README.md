@@ -26,6 +26,7 @@ myenv\Scripts\activate
 ```bash 
 uv pip install psutil rich
 uv pip install tinydb
+uv pip install matplotlib
 
 ```
 
