@@ -24,7 +24,9 @@ myenv\Scripts\activate
 ### Install Required Packages
 
 ```bash 
-pip install psutil rich
+uv pip install psutil rich
+uv pip install tinydb
+
 ```
 
 ### Run the Python Script

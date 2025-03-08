@@ -4,6 +4,10 @@ import datetime
 import time
 from rich.console import Console
 from rich.table import Table
+from tinydb import TinyDB
+
+db = TinyDB('system_info.json')
+SystemData = db.table('data')   
 
 delayTime = 1
 
@@ -25,8 +29,6 @@ class SystemInfo:
         self.battery_persentage = None
         self.battery_is_charging  = None
 
-
-
     def collect(self):
         self.timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.os_info = f"{platform.system()} {platform.release()}"
@@ -43,12 +45,37 @@ class SystemInfo:
         self.battery_persentage =  psutil.sensors_battery().percent
         self.battery_is_charging =  psutil.sensors_battery().power_plugged
 
+    def insert_into_db(self):  
+        try:
+            SystemData.insert({
+            'time': self.timestamp,
+            'os_info': self.os_info,
+            'processor': self.processor,
+            'os_architecture': self.os_architecture,
+            'cores': self.cores,
+            'threads': self.threads,
+            'ram': self.ram,
+            'cpu_usage': self.cpu_usage,
+            'cpu_freq': self.cpu_freq,
+            'ram_usage': self.ram_usage,
+            'disk_usage': self.disk_usage,
+            'boot_time': self.boot_time,
+            'battery_persentage': self.battery_persentage,
+            'battery_is_charging': self.battery_is_charging
+        })
+
+        except Exception as e:
+            print(f"Error inserting data into database: {e}")
+
 
 console = Console()
 
 def get_system_info():
     sysInfo = SystemInfo()
+
     sysInfo.collect()
+    sysInfo.insert_into_db()
+
     table = Table(title=f"System Information {platform.node().split('.')[0]}", show_lines=True)
     table.add_column("Metrics", justify="left", style="blue", no_wrap=True)
     table.add_column("Value", justify="right", style="green")
@@ -64,7 +91,6 @@ def get_system_info():
     table.add_row("Disk Space (GB)", f"{sysInfo.disk_usage:.2f} GB")
     table.add_row("Battery charging percent", f"{sysInfo.battery_persentage:} ")
     table.add_row("Battery charging", "Charging" if sysInfo.battery_is_charging else "Unplugged")
-
 
     return table
 
