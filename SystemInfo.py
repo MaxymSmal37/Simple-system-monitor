@@ -26,11 +26,11 @@ class SystemInfo:
         self.boot_time = None
         self.battery_percentage = None
         self.battery_is_charging = None
-        
         self.thread = threading.Thread(target=self.collect, daemon=True)
         self.thread.start()
 
     def collect(self):
+        """Постійне оновлення системної інформації в окремому потоці"""
         while True:
             with self.lock:
                 self.timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -52,7 +52,8 @@ class SystemInfo:
                 else:
                     self.battery_percentage = "N/A"
                     self.battery_is_charging = "N/A"
-            time.sleep(delayTime)
+
+            time.sleep(delayTime) 
 
 def get_system_info(sys_info):
     with sys_info.lock:
@@ -85,11 +86,6 @@ def monitor_system(sys_info):
     except Exception as e:
         console.print(f"\nSomething went wrong: {e}")
 
-def start_monitoring(sys_info):
-    monitor_thread = threading.Thread(target=monitor_system, args=(sys_info,), daemon=True)
-    monitor_thread.start()
-    monitor_thread.join()
-
 if __name__ == "__main__":
-    sys_info = SystemInfo()
-    start_monitoring(sys_info)
+    sys_info = SystemInfo() 
+    monitor_system(sys_info)
