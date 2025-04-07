@@ -41,3 +41,10 @@ python SystemInfo.py
 ```bash 
 deactivate
 ``` 
+
+### Run using Docker
+
+```bash 
+docker build --no-cache -t system-monitor .
+docker compose up   
+``` 

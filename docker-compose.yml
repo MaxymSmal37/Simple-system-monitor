@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  system-monitor:
+    build: .
+    container_name: system-monitor
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    privileged: true
+    pid: "host"
+    volumes:
+      - .:/app
+      - /:/host
