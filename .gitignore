@@ -1,3 +1,4 @@
 myenv/
 .DS_Store
 *.json
+system_info_llm_log.md
