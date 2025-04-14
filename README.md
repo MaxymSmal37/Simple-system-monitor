@@ -27,7 +27,8 @@ myenv\Scripts\activate
 uv pip install psutil rich
 uv pip install tinydb
 uv pip install matplotlib
-uv pip requests
+uv pip install requests
+uv pip install streamlit pandas
 
 ```
 
